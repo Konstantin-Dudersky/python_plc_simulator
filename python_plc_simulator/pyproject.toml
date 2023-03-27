@@ -1,0 +1,29 @@
+[tool.black]
+line-length = 80
+
+
+[tool.poetry]
+name = "python-plc-simulator"
+version = "0.0.1"
+description = ""
+authors = ["Konstantin.Dudersky <konstantin.dudersky@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "python_plc_simulator" }]
+
+
+[tool.poetry.scripts]
+start = "python_plc_simulator.__main__:main"
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pymodbus = "^3.2.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
