@@ -1,6 +1,5 @@
 from enum import StrEnum, auto
 from ipaddress import IPv4Address
-from typing import Any
 
 from pymodbus.client import AsyncModbusTcpClient
 
@@ -8,7 +7,7 @@ from pymodbus.exceptions import ModbusException
 from pymodbus.pdu import ExceptionResponse, ModbusResponse
 
 from .exceptions import RequestError
-from ..data.register import RegisterBase, RegisterInput, RegisterOutput
+from ..models.register import RegisterBase
 
 
 class States(StrEnum):

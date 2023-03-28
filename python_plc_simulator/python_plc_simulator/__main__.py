@@ -4,8 +4,8 @@ from ipaddress import IPv4Address
 
 from .modbus_client import ModbusClient
 
-from .data.device import SiemensCPU1212
-from .data.data import DataBase
+from .models.device import SiemensCPU1212
+from .models.data import DataBase
 
 
 @dataclass
@@ -14,10 +14,6 @@ class Data(DataBase):
 
 
 data1 = Data()
-
-# for key, value in asdict(data1).items():
-#     value = cast(DeviceBase, value)
-#     print(value.registers)
 
 print(data1.all_registres)
 

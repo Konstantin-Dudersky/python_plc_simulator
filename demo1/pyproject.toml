@@ -3,31 +3,23 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 
-[tool.black]
-line-length = 80
-
-
 [tool.poetry]
-name = "python-plc-simulator"
-version = "0.0.1"
+name = "demo1"
+version = "0.1.0"
 description = ""
-authors = ["Konstantin.Dudersky <konstantin.dudersky@gmail.com>"]
+authors = ["konstantin-dudersky <konstantin.dudersky@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "python_plc_simulator" }]
 
 
-[tool.poetry.scripts]
-start = "python_plc_simulator.__main__:main"
-
+[tool.poe.tasks.update_stubs]
+shell = """rm -rf .venv/typings && pyright --createstub python_plc_simulator
+"""
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pymodbus = "^3.2.2"
 
-
-[tool.poetry.group.dev.dependencies]
-black = "*"
-
+poethepoet = "*"
+python_plc_simulator = { path = "../python_plc_simulator", develop = true }
 
 [tool.pyright]
 pythonPlatform = "Linux"
