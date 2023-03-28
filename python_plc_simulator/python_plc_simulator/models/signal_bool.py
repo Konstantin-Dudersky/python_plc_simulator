@@ -11,6 +11,11 @@ def reset_bit(value: int, bit: int) -> int:
     return value & ~(1 << bit)
 
 
+def is_bit_set(value: int, bit: int) -> bool:
+    """Проверка, что бит установлен."""
+    return value & 1 << bit != 0
+
+
 class SignalBool:
     def __init__(self, register: RegisterBase, number: int) -> None:
         self.__register = register
@@ -18,7 +23,7 @@ class SignalBool:
 
     @property
     def value(self) -> bool:
-        return False
+        return is_bit_set(self.__register.value, self.__number)
 
     @value.setter
     def value(self, value: bool) -> None:

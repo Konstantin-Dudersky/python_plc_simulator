@@ -27,6 +27,7 @@ pymodbus = "^3.2.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
+wemake-python-styleguide = "*"
 
 
 [tool.pyright]

@@ -1,14 +1,12 @@
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass, fields
 
 from .register import RegisterBase
 
-from .device import DeviceBase
-
 
 @dataclass
-class DataBase:
+class DataBase(object):
     @property
     def all_registres(self) -> tuple[RegisterBase, ...]:
-        devices: list[DeviceBase] = asdict(self).values()  # type: ignore
+        devices = (getattr(self, field.name) for field in fields(self))
         registers = (dev.registers for dev in devices)
         return tuple(*registers)
