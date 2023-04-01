@@ -1,7 +1,9 @@
 import logging
-from enum import StrEnum, auto
+from asyncio import sleep
 from ipaddress import IPv4Address
 from typing import TypeAlias
+
+import async_state_machine as sm
 
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException
@@ -18,9 +20,9 @@ ResponseType: TypeAlias = ExceptionResponse | ModbusResponse
 RegistersType: TypeAlias = RegisterBase | RegisterInput | RegisterOutput
 
 
-class States(StrEnum):
-    disconnected = auto()
-    connected = auto()
+class States(sm.StatesEnum):
+    disconnected = sm.enum_auto()
+    connected = sm.enum_auto()
 
 
 class ModbusClient:
@@ -31,18 +33,52 @@ class ModbusClient:
         port: int = 502,
     ) -> None:
         self.__client: AsyncModbusTcpClient
-        self.__state: States
         self.__registers: tuple[RegistersType, ...]
+        self.__sm: sm.StateMachine
 
         self.__client = AsyncModbusTcpClient(
             host=str(host),
             port=port,
+            close_comm_on_error=True,
+            retries=0,
         )
-        self.__state = States.disconnected
         self.__registers = registres
+        self.__sm = sm.StateMachine(
+            states={
+                sm.State(
+                    name=States.disconnected,
+                    on_run=[self.__on_run_disconnected],
+                ),
+                sm.State(
+                    name=States.connected,
+                    on_run=[self.__on_run_connected],
+                    on_exit=[self.__on_exit_connected],
+                ),
+            },
+            states_enum=States,
+            init_state=States.disconnected,
+        )
 
-    async def cycle(self):
+    async def run(self):
+        await self.__sm.run()
+
+    async def __on_run_disconnected(self):
         await self.__client.connect()
+        if self.__client.connected:
+            raise sm.NewStateException(States.connected)
+        else:
+            await sleep(2)
+
+    async def __on_run_connected(self):
+        try:
+            await self.__process_registers()
+        except RequestError:
+            raise sm.NewStateException(States.disconnected)
+
+    async def __on_exit_connected(self):
+        await self.__client.close()
+
+    async def __process_registers(self) -> None:
         for address, register in enumerate(self.__registers):
             match register:
                 case RegisterInput():
@@ -66,11 +102,14 @@ class ModbusClient:
             )
         except ModbusException as exc:
             log.error(exc)
-            raise ConfigError from exc
+            raise RequestError from exc
+        except TimeoutError as exc:
+            log.error(exc)
+            raise RequestError from exc
 
     async def __register_read(self, address: int) -> int:
         try:
-            rh: ResponseType = (
+            reg: ResponseType = (
                 await self.__client.read_holding_registers(  # pyright: ignore
                     address=address,
                     count=1,
@@ -78,9 +117,12 @@ class ModbusClient:
             )
         except ModbusException as exc:
             log.error(exc)
-            raise ConfigError from exc
-        _check_modbus_response(rh)
-        return rh.registers[0]  # pyright: ignore
+            raise RequestError from exc
+        except TimeoutError as exc:
+            log.error(exc)
+            raise RequestError from exc
+        _check_modbus_response(reg)
+        return reg.registers[0]  # pyright: ignore
 
 
 def _check_modbus_response(response: ResponseType) -> ModbusResponse:

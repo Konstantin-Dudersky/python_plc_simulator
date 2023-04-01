@@ -1,14 +1,10 @@
-import abc
-
-from .register import RegisterBase, RegisterInput, RegisterOutput
-from .signal_bool import SignalBool
-
-
-class DeviceBase(abc.ABC):
-    @property
-    @abc.abstractmethod
-    def registers(self) -> tuple[RegisterBase, ...]:
-        ...
+from ..devices.device_base import DeviceBase
+from ..register import (
+    RegisterBase,
+    RegisterInput,
+    RegisterOutput,
+)
+from ..signal_bool import SignalBool
 
 
 class SiemensCPU1212(DeviceBase):

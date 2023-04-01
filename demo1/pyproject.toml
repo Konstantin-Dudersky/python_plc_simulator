@@ -9,17 +9,24 @@ version = "0.1.0"
 description = ""
 authors = ["konstantin-dudersky <konstantin.dudersky@gmail.com>"]
 readme = "README.md"
+packages = [{ include = "demo1", from = "src" }]
 
 
 [tool.poe.tasks.update_stubs]
 shell = """rm -rf .venv/typings && pyright --createstub python_plc_simulator
 """
 
+
+[tool.poetry.scripts]
+start_demo1 = "src.demo1.__main__:main"
+
+
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "3.11.*"
 
 poethepoet = "*"
 python_plc_simulator = { path = "../python_plc_simulator", develop = true }
+
 
 [tool.pyright]
 pythonPlatform = "Linux"
