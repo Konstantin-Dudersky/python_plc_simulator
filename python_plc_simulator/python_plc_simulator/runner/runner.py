@@ -1,13 +1,12 @@
 """Класс для запуска асинхронных задач."""
 
 import asyncio
-import logging
-from typing import Coroutine, Final, Iterable, TypeAlias
+from typing import Coroutine, Final, Iterable
 
-TCoro: TypeAlias = Coroutine[None, None, None]
+from loguru import logger
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+TCoro = Coroutine[None, None, None]
+
 
 MSG_BASE_EXCEPTION: Final[
     str
@@ -41,7 +40,7 @@ class Runner(object):
         try:
             await self.__create_tasks_for_coro()
         except BaseException:  # noqa: WPS424
-            log.exception(MSG_BASE_EXCEPTION)
+            logger.exception(MSG_BASE_EXCEPTION)
             if not self.__catch_exception:
                 raise
 

@@ -3,10 +3,9 @@ import asyncio
 from python_plc_simulator.modbus_client import ModbusClient
 from python_plc_simulator.runner import Runner
 
-from .device_configuration import device_configuration
 from .const import IP_ADDRESS
-
-from python_plc_simulator.logger import Logger
+from .device_configuration import device_configuration
+from .sim import sim, used_sim_devices
 
 
 async def print_():
@@ -22,6 +21,8 @@ def main():
         registres=device_configuration.all_registres,
         host=IP_ADDRESS,
     )
-    runner.add_task(client.run())
-    runner.add_task(print_())
+    runner.add_task(client.run())  # pyright: ignore
+    runner.add_task(sim())
+    for sim_device in used_sim_devices:
+        runner.add_task(sim_device.run())
     asyncio.run(runner())

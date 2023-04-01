@@ -14,8 +14,8 @@ class SiemensCPU1212(DeviceBase):
         self.__reg_ai_0 = RegisterInput()
         self.__reg_ai_1 = RegisterInput()
 
-        self.__di_a_0 = SignalBool(self.__reg_di_a, 0)
-        self.__di_a_1 = SignalBool(self.__reg_di_a, 1)
+        self.__di_a_0 = SignalBool(self.__reg_di_a, 8)
+        self.__di_a_1 = SignalBool(self.__reg_di_a, 9)
         self.__dq_a_0 = SignalBool(self.__reg_dq_a, 8)
 
     @property

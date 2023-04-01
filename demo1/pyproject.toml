@@ -13,7 +13,9 @@ packages = [{ include = "demo1", from = "src" }]
 
 
 [tool.poe.tasks.update_stubs]
-shell = """rm -rf .venv/typings && pyright --createstub python_plc_simulator
+shell = """rm -rf .venv/typings \
+&& pyright --createstub python_plc_simulator \
+&& pyright --createstub async_state_machine
 """
 
 
@@ -23,9 +25,13 @@ start_demo1 = "src.demo1.__main__:main"
 
 [tool.poetry.dependencies]
 python = "3.11.*"
-
 poethepoet = "*"
 python_plc_simulator = { path = "../python_plc_simulator", develop = true }
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+wemake-python-styleguide = "0.17.0"
 
 
 [tool.pyright]

@@ -1,20 +1,17 @@
-import logging
+"""Клиент для подключения через протокол Modbus."""
+
 from asyncio import sleep
 from ipaddress import IPv4Address
 from typing import TypeAlias
 
 import async_state_machine as sm
-
+from loguru import logger
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException
 from pymodbus.pdu import ExceptionResponse, ModbusResponse
 
-from .exceptions import ConfigError, RequestError
 from ..models.register import RegisterBase, RegisterInput, RegisterOutput
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
+from .exceptions import ConfigError, RequestError
 
 ResponseType: TypeAlias = ExceptionResponse | ModbusResponse
 RegistersType: TypeAlias = RegisterBase | RegisterInput | RegisterOutput
@@ -26,12 +23,15 @@ class States(sm.StatesEnum):
 
 
 class ModbusClient:
+    """Клиент для подключения через протокол Modbus."""
+
     def __init__(
         self,
         registres: tuple[RegistersType, ...],
         host: IPv4Address,
         port: int = 502,
     ) -> None:
+        """Клиент для подключения через протокол Modbus."""
         self.__client: AsyncModbusTcpClient
         self.__registers: tuple[RegistersType, ...]
         self.__sm: sm.StateMachine
@@ -101,10 +101,10 @@ class ModbusClient:
                 value=value,
             )
         except ModbusException as exc:
-            log.error(exc)
+            logger.error(exc)
             raise RequestError from exc
         except TimeoutError as exc:
-            log.error(exc)
+            logger.error(exc)
             raise RequestError from exc
 
     async def __register_read(self, address: int) -> int:
@@ -116,10 +116,10 @@ class ModbusClient:
                 )
             )
         except ModbusException as exc:
-            log.error(exc)
+            logger.error(exc)
             raise RequestError from exc
         except TimeoutError as exc:
-            log.error(exc)
+            logger.error(exc)
             raise RequestError from exc
         _check_modbus_response(reg)
         return reg.registers[0]  # pyright: ignore

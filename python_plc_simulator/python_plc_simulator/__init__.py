@@ -1,11 +1,12 @@
-# from .logger import Logger
+"""Инициализация пакета."""
 
-from . import modbus_client
-from . import models
+from loguru import logger
 
-# Logger(output_to_console=True)
+from . import modbus_client, models
 
 __all__ = [
     "modbus_client",
     "models",
 ]
+
+logger.disable(__name__)
